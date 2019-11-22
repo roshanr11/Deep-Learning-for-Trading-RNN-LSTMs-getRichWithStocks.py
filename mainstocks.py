@@ -127,3 +127,159 @@ def stochasticD(df, numDays):
     return df
 
 
+# rate of change (roc): https://www.investopedia.com/terms/p/pricerateofchange.asp
+def roc(data, n):
+    '''
+    "a momentum-based technical indicator that measures the
+    percentage change in price between the current price and
+    the price a certain number of periods ago. The ROC indicator
+    is plotted against zero, with the indicator moving upwards into
+    positive territory if price changes are to the upside, and moving
+    into negative territory if price changes are to the downside."
+    '''
+    roc = 100 * ((close - close.shift(n)) / close.shift(n))
+    if fillna:
+        roc = roc.replace([np.inf, -np.inf], np.nan).fillna(0)
+    return pd.Series(roc, name='ROC')
+
+
+# bollinger bands (bb): https://traderhq.com/ultimate-guide-to-bollinger-bands/
+def calcbolBands(data, n):
+    # Calculate n-Day Moving Average, Std Deviation, Upper Band and Lower Band
+    data['MA'] = data['Adj Close'].rolling(window=n).mean()
+    data['STD'] = data['Adj Close'].rolling(window=n).std()
+    data['UpperBand'] = data['MA'] + (data['STD'] * 2)
+    data['LowerBand'] = data['MA'] - (data['STD'] * 2)
+
+    # Simple 30 Day Bollinger Band for Facebook (2016-2017)
+    #     stock[pd.DataFrame('Adj Close', '30 Day MA', 'Upper Band', 'Lower Band')].plot(figsize=(12,6))
+    data['Adj Close'].plot(figsize=(12, 6))
+    data['MA'].plot(figsize=(12, 6))
+    data['UpperBand'].plot(figsize=(12, 6))
+    data['LowerBand'].plot(figsize=(12, 6))
+    plt.title(f'{n} Day Bollinger Band for AAPL')
+    plt.ylabel('Price (USD)')
+
+    # fill inbetween
+    #     plt.fill_between(x_axis, fb['Upper Band'], fb['Lower Band'], color='grey')
+
+    plt.show();
+
+    from datetime import *
+    # remap indices with respect to the first date, in days
+
+    # https://stackoverflow.com/questions/1345827/how-do-i-find-the-time-difference-between-two-datetime-objects-in-python
+
+    def daysFromSecs(seconds=None):
+        return divmod(seconds if seconds != None else duration_in_s, 86400)  # Seconds in a day = 86400
+
+    start = data.index.values[0]
+    for i in range(len(data.index.values)):
+        print(daysFromSecs(int(data.index.values[i + 1]) - int(data.index.values[i]))).head()
+
+
+
+    #######
+
+    # Example of Standalone Simple Linear Regression
+    from math import sqrt
+
+    # Calculate root mean squared error
+    def rmse_metric(actual, predicted):
+        sum_error = 0.0
+        for i in range(len(actual)):
+            prediction_error = predicted[i] - actual[i]
+            sum_error += (prediction_error ** 2)
+        mean_error = sum_error / float(len(actual))
+        return sqrt(mean_error)
+
+    # Evaluate regression algorithm on training dataset
+    def evaluate_algorithm(dataset, algorithm):
+        test_set = list()
+        for row in dataset:
+            row_copy = list(row)
+            row_copy[-1] = None
+            test_set.append(row_copy)
+        predicted = algorithm(dataset, test_set)
+        #     print(predicted, '\n'*10)
+        actual = [row[-1] for row in dataset]
+        rmse = calcRMSE(actual, predicted)
+        return (predicted, rmse)
+
+    # Calculate the mean value of a list of numbers
+    def mean(values):
+        return np.sum(values) / float(len(values))
+
+    # Calculate covariance between x and y
+    def covariance(x, mean_x, y, mean_y):
+        covar = 0.0
+        for i in range(len(x)):
+            covar += (x[i] - mean_x) * (y[i] - mean_y)
+        return covar
+
+    # Calculate the variance of a list of numbers
+    def variance(values, mean):
+        return sum([(x - mean) ** 2 for x in values])
+
+    # Calculate coefficients
+    def coefficients(dataset):
+        x = [row[0] for row in dataset]
+        y = [row[1] for row in dataset]
+        x_mean, y_mean = calcMean(x), calcMean(y)
+        b1 = calcCovariance(x, x_mean, y, y_mean) / calcVariance(x, x_mean)
+        b0 = y_mean - b1 * x_mean
+        return [b0, b1]
+
+    # Simple linear regression algorithm
+    def simple_linear_regression(train, test):
+        predictions = list()
+        b0, b1 = calcCoeffs(train)
+        for row in test:
+            yhat = b0 + b1 * row[0]
+            predictions.append(yhat)
+        return predictions
+
+    # Test simple linear regression
+    dataset = [[1, 1], [2, 3], [4, 3], [3, 2], [5, 5]]
+    predicted, rmse = evaluate_algorithm(dataset, simple_linear_regression)
+    print(f'Predicted: {predicted}', '\n' * 5)
+    print('RMSE: %.3f' % (rmse))
+
+    ######
+
+   
+
+
+########
+
+# Example of Simple Linear Regression on the Swedish Insurance Dataset
+from random import seed
+from random import randrange
+from csv import reader
+from math import sqrt
+
+
+def trainTestSplit(data, split):  # writing the training-testing set splitting algorithm from scratch
+    openData = data['Open']
+    train = list()
+    trainSize = split * len(openData)
+    copiedDataList = list(openData)
+    while len(train) < trainSize:
+        index = randrange(len(copiedDataList))
+        train.append(copiedDataList.pop(index))
+    return train, pd.Series(copiedDataList)
+
+# split dataset into k folds
+# def cvSplit(dataset, folds=5): # cross-validation split by method of k-fold cross-validation, default # folds is 5
+#     splitData = list()
+#     copiedDataList = list(dataset)
+#     foldGap = int(len(dataset)/folds)
+#     for _ in range(folds):
+#         fold = list()
+#         while len(fold) < foldGap:
+#             index = randrange(len(copiedDataList))
+#             fold.append(copiedDataList.pop(index))
+#         splitData.append(fold)
+#     return pd.Series(splitData)
+
+##########
