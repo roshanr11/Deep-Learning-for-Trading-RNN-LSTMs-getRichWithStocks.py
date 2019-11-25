@@ -11,7 +11,6 @@ import random
 from PIL import Image
 # import import_ipynb
 # template: from ipynb.fs.full.<notebookname> import *
-# from ipynb.fs.full.v1mainstockfile_notebookversion import *
 # import v1mainstockfile_notebookversion # ipynb file main
 # from mainstocks import *
 
@@ -22,6 +21,7 @@ from pandas import *
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from ipynb.fs.full.v1mainstockfile_notebookversion import *
 
 # source: https://datatofish.com/matplotlib-charts-tkinter-gui/
 #####
@@ -48,8 +48,14 @@ class instructionsMode(Mode):
         canvas.create_text(mode.width/2, 200, text = 'Click the jawn you wish to jawn! \n\n   Happy stockJawning.', 
                            font = font)
 
-
 class mainMode(Mode):
+    # data = getData()
+    showStock()
+    data = calcMA(data, 5, 'simple')
+    # plotPrediction(data, 5)
+
+
+
     def appStarted(mode):
         root = tk.Tk() 
 
