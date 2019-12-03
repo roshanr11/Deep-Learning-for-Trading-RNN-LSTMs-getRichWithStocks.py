@@ -21,6 +21,7 @@ from pandas import *
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from ipynb.fs.full.v1mainstockfile_notebookversion import *
 
 # source: https://datatofish.com/matplotlib-charts-tkinter-gui/
@@ -39,19 +40,122 @@ class startMode(Mode):
 
 
 class instructionsMode(Mode):
+    def appStarted(mode):
+        mode.button1 = (mode.width*(2/10), mode.height*(6/10), mode.width*(4/10), 
+        mode.height*(8/10), 'blue')
+
+        mode.text1 = (mode.button1[0] + (mode.button1[2] - mode.button1[0])/2, 
+                      mode.button1[1] + (mode.button1[3] - mode.button1[1])/2,
+                      'Helvetica 17 bold')
+
+        mode.button2 = (mode.width*(6/10), mode.height*(6/10), mode.width*(8/10), 
+        mode.height*(8/10), 'green')
+
+        mode.text2 = (mode.button2[0] + (mode.button2[2] - mode.button2[0])/2, 
+                      mode.button2[1] + (mode.button2[3] - mode.button2[1])/2,
+                      'Helvetica 17 bold')
+
+
     def keyPressed(mode, event):
         mode.app.setActiveMode(mode.app.mainMode)
 
     def redrawAll(mode, canvas):
         font = 'Arial 26 bold'
         canvas.create_text(mode.width/2, 150, text = 'Instructions: ', font = font)
-        canvas.create_text(mode.width/2, 200, text = 'Click the jawn you wish to jawn! \n\n   Happy stockJawning.', 
+        canvas.create_text(mode.width/2, 200, text = 'Click the model type\nyou wish to proceed with!', 
                            font = font)
+
+        canvas.create_rectangle(mode.button1[0], mode.button1[1], mode.button1[2], 
+                                mode.button1[3], fill = mode.button1[-1]) # button #1
+
+        canvas.create_text(mode.text1[0], mode.text1[1], text = 'Multiple\nLinear\nRegression',
+                            font = mode.text1[-1]) # text #2
+
+        canvas.create_rectangle(mode.button2[0], mode.button2[1], mode.button2[2], 
+                                mode.button2[3], fill = mode.button2[-1]) # button #2
+
+        canvas.create_text(mode.text2[0], mode.text2[1], text = 'Long\nShort-Term\nMemory\nModel',
+                            font = mode.text2[-1]) # text #2
+
+        # canvas.create_rectangle(mode.width/10, 0, 
+        #                         mode.width/2 + 100, mode.height/2 + 200, 
+        #                         fill = 'black')
+
+    def mousePressed(mode, event):
+        if mode.button1[0] <= event.x <= mode.button1[2] and \
+            mode.button1[1] <= event.y <= mode.button1[3]:
+            mode.app.setActiveMode(mode.app.button1mode)
+
+        if mode.button2[0] <= event.x <= mode.button2[2] and \
+            mode.button2[1] <= event.y <= mode.button2[3]:
+            mode.app.setActiveMode(mode.app.button2mode)
+
+
+class button1Mode(Mode):
+
+    # def getData(app):
+    #     stock = None
+    #     while not isinstance(stock, str):
+    #         stock = app.getUserInput("Enter your desired stock. Only alphanumeric characters please.")
+    #         openingInp = app.getUserInput("Enter your desired opening date. (yyyy-mm-dd)") #'2016-01-01'
+    #         closingInp = app.getUserInput("Enter your desired closing date. (yyyy-mm-dd)") # '2019-08-01'
+
+
+
+    def appStarted(mode):
+        # data = None
+        # while True:
+        #     data, stock = getData(app)
+        # print('test')
+        # inp = app.getUserInput("enter some input jawnson")
+        # print(inp)
+        mode.data = None
+
+    def keyPressed(mode, event):
+        # data, stock = getData()
+        if event.key == 'd':
+            # data = None
+            while True:
+                mode.data, mode.stock = getData(mode)
+                if mode.data != None:
+                    break
+
+    
+
+
+    #     data = yf.download(stock, openingInp, closingInp)
+    #     return data, stock 
+
+    
+
+    def redrawAll(mode, canvas):
+        canvas.create_rectangle(0, 0, mode.app.width, mode.app.height, 
+                                fill = 'green')
+
+        canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'MLR to be implemented here')
+
+        if mode.data != None:
+
+            mode.data = calcCCI(mode.data, 30)
+            mode.data = calcMA(mode.data, 5, 'simple')
+
+            mlrRecommendation(mode.data, 5, 3, 5)
+
+
+class button2Mode(Mode):
+    def redrawAll(mode, canvas):
+        canvas.create_rectangle(0, 0, mode.app.width, mode.app.height, 
+                                fill = 'maroon')
+
+        canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'LSTMM to be implemented here')
+
 
 class mainMode(Mode):
     # data = getData()
-    showStock()
-    data = calcMA(data, 5, 'simple')
+
+    # showStock()
+    # data = calcMA(data, 5, 'simple')
+
     # plotPrediction(data, 5)
 
 
@@ -147,6 +251,12 @@ class MyModalApp(ModalApp):
         app.startMode = startMode()
         app.instructionsMode = instructionsMode()
         app.mainMode = mainMode()
+
+        # buttons
+        app.button1mode = button1Mode()
+        app.button2mode = button2Mode()
+
+        # do i need this help part?
         app.helpMode = HelpMode()
         app.setActiveMode(app.startMode)
         app.timerDelay = 50
