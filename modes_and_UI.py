@@ -14,6 +14,7 @@ from PIL import Image
 # import v1mainstockfile_notebookversion # ipynb file main
 # from mainstocks import *
 
+
 import pandas as pd
 from pandas import *
 
@@ -109,16 +110,23 @@ class button1Mode(Mode):
         # print('test')
         # inp = app.getUserInput("enter some input jawnson")
         # print(inp)
+
+        # mode.data, mode.stock = getData(mode) 
         mode.data = None
+        mode.dataExists = False
 
     def keyPressed(mode, event):
         # data, stock = getData()
         if event.key == 'd':
             # data = None
-            while True:
-                mode.data, mode.stock = getData(mode)
-                if mode.data != None:
-                    break
+            # while True:
+            mode.data, mode.stock = getData(mode)
+            if type(mode.data) is not None:
+                print("made it to dataExists")
+                mode.dataExists = True
+
+                # if None in pd.Series(mode.data): # mode.data != None:
+                #     break
 
     
 
@@ -134,10 +142,12 @@ class button1Mode(Mode):
 
         canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'MLR to be implemented here')
 
-        if mode.data != None:
+        # if mode.data != None:
 
-            mode.data = calcCCI(mode.data, 30)
-            mode.data = calcMA(mode.data, 5, 'simple')
+        if mode.dataExists:
+            print(mode.data)
+            # mode.data = calcCCI(mode.data, 30)
+            # mode.data = calcMA(mode.data, 5, 'simple')
 
             mlrRecommendation(mode.data, 5, 3, 5)
 
@@ -264,3 +274,19 @@ class MyModalApp(ModalApp):
 
 # def runCreativeSideScroller():
 MyModalApp(width=500, height=500)
+
+
+
+####################################################################################
+
+# TP-a-Thon Notes: 
+# tkinter packing (geometrical packing for matplotlib overlay onto tkinter?) 
+# (not sure if it works with matplotlib)
+
+# add some kind of background 
+# bouncing square, pattern in background 
+
+########
+
+# add purpose of game
+# explanations/run modes within 
