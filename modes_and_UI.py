@@ -62,6 +62,16 @@ class instructionsMode(Mode):
 
     def redrawAll(mode, canvas):
         font = 'Arial 26 bold'
+
+        ##############################
+
+        randColor = random.choice(['blue', 'red', 'green', 'black', 'yellow'])
+
+        canvas.create_rectangle(0, 0, mode.width, mode.height, 
+                                fill = randColor)
+
+        ##############################
+
         canvas.create_text(mode.width/2, 150, text = 'Instructions: ', font = font)
         canvas.create_text(mode.width/2, 200, text = 'Click the model type\nyou wish to proceed with!', 
                            font = font)
@@ -150,6 +160,7 @@ class button1Mode(Mode):
             # mode.data = calcMA(mode.data, 5, 'simple')
 
             mlrRecommendation(mode.data, 5, 3, 5)
+            mode.dataExists = False
 
 
 class button2Mode(Mode):
