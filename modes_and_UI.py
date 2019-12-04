@@ -31,6 +31,7 @@ from ipynb.fs.full.v1mainstockfile_notebookversion import *
 
 class startMode(Mode):
     def redrawAll(mode, canvas):
+        canvas.create_rectangle(0, 0, mode.width, mode.height, fill = 'orange')
         font = 'Arial 26 bold'
         canvas.create_text(mode.width / 2, 150, text='Welcome to', font=font)
         canvas.create_text(mode.width / 2, 200, text='getRichWithStocks.py', font=font)
@@ -42,6 +43,7 @@ class startMode(Mode):
 
 class instructionsMode(Mode):
     def appStarted(mode):
+
         mode.button1 = (mode.width*(2/10), mode.height*(6/10), mode.width*(4/10), 
         mode.height*(8/10), 'blue')
 
@@ -65,7 +67,8 @@ class instructionsMode(Mode):
 
         ##############################
 
-        randColor = random.choice(['blue', 'red', 'green', 'black', 'yellow'])
+        # randColor = random.choice(['blue', 'green'])
+        randColor = 'lightblue'
 
         canvas.create_rectangle(0, 0, mode.width, mode.height, 
                                 fill = randColor)
@@ -149,6 +152,9 @@ class button1Mode(Mode):
     def redrawAll(mode, canvas):
         canvas.create_rectangle(0, 0, mode.app.width, mode.app.height, 
                                 fill = 'green')
+
+        canvas.create_text(mode.app.width/2, mode.app.height/3,
+                         text = 'PRESS D TO BEGIN', font = 'helvetica 35 bold') # shortcut to prevent crashes
 
         canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'MLR to be implemented here')
 
