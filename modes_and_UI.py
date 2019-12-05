@@ -24,6 +24,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from ipynb.fs.full.v1mainstockfile_notebookversion import *
+# from ipynb.fs.full.v1REALTP_lstm_stuff import *
+from ipynb.fs.full.BACKUPv1REALTP_lstm_stuff import *
 
 # source: https://datatofish.com/matplotlib-charts-tkinter-gui/
 #####
@@ -61,6 +63,7 @@ class instructionsMode(Mode):
 
     def keyPressed(mode, event):
         mode.app.setActiveMode(mode.app.mainMode)
+
 
     def redrawAll(mode, canvas):
         font = 'Arial 26 bold'
@@ -170,6 +173,31 @@ class button1Mode(Mode):
 
 
 class button2Mode(Mode):
+    def keyPressed(mode, event):
+        if event.key == 'd':
+            # %run 15112TP_lstm_stuff.ipynb
+            # from ipynb.fs.full.v1mainstockfile_notebookversion import *
+
+            print('getting data...')
+            # data, stock = getData(mode)
+            ####
+
+            data, stock = getData_LSTM(mode)
+
+            x_train, x_test = mainFunc1(data)  # IMP!
+            x_t, y_t, x_val, x_test_t, y_val, y_test_t = mainFunc2(x_test, x_train)  # IMP!
+            model = create_model(x_t)  # IMP!
+            history = trainModel(x_t, y_t, x_val, y_val, model, 300)  # IMP!
+            y_pred_org, y_test_t_org = createPredictions_LSTM(model, x_test_t, y_test_t) #IMP!
+
+
+            print('here is the loss for the model that was trained on this stock')
+            plotLoss(history) #IMP!
+            print("here's the error for that model")
+            print(calcError(model, x_test_t, y_test_t, y_pred_org, y_test_t_org)) #IMP!
+            print('here is the prediction using that model')
+            plotPrediction(y_pred_org, y_test_t_org) # IMP!
+
     def redrawAll(mode, canvas):
         canvas.create_rectangle(0, 0, mode.app.width, mode.app.height, 
                                 fill = 'maroon')
@@ -307,3 +335,25 @@ MyModalApp(width=500, height=500)
 
 # add purpose of game
 # explanations/run modes within 
+
+######
+
+# 12/4
+# labels to axes
+# label for title of graph
+
+####
+
+# 3 different models
+# explanations
+# add fractals to UI
+
+
+# important:
+
+# help mode/actual instructions
+
+# get UI working
+# explanations
+# metrics to show accuracy 
+# improve LSTM
