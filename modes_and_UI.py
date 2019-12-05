@@ -23,8 +23,12 @@ import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+####
+
 from ipynb.fs.full.v1mainstockfile_notebookversion import *
+
 # from ipynb.fs.full.v1REALTP_lstm_stuff import *
+
 from ipynb.fs.full.BACKUPv1REALTP_lstm_stuff import *
 
 # source: https://datatofish.com/matplotlib-charts-tkinter-gui/
@@ -159,7 +163,7 @@ class button1Mode(Mode):
         canvas.create_text(mode.app.width/2, mode.app.height/3,
                          text = 'PRESS D TO BEGIN', font = 'helvetica 35 bold') # shortcut to prevent crashes
 
-        canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'MLR to be implemented here')
+        canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'Multiple Linear Regression:')
 
         # if mode.data != None:
 
@@ -182,12 +186,47 @@ class button2Mode(Mode):
             # data, stock = getData(mode)
             ####
 
+            # usingSavedModel = False
+
             data, stock = getData_LSTM(mode)
 
             x_train, x_test = mainFunc1(data)  # IMP!
             x_t, y_t, x_val, x_test_t, y_val, y_test_t = mainFunc2(x_test, x_train)  # IMP!
-            model = create_model(x_t)  # IMP!
-            history = trainModel(x_t, y_t, x_val, y_val, model, 300)  # IMP!
+
+
+            if not usingSavedModel:
+                history = trainModel(x_t, y_t, x_val, y_val, model, 300)  # IMP!
+                f = open('history.pckl', 'wb')
+                pickle.dump(history, f)
+                f.close()
+            else:
+                f = open('history.pckl', 'rb')
+                history = pickle.load(f)
+                f.close()
+
+
+            if not usingSavedModel:
+                model = create_model(x_t)  # IMP!
+                
+                today = date.today()
+                d4 = today.strftime("%b-%d-%Y")
+                # ^Credit: https://www.programiz.com/python-programming/datetime/current-datetime
+
+                fileName = f'{d4}_savedLSTM.h5' 
+                model.save(fileName)
+                print(f"Saved model `{fileName}` to disk")
+            else:
+                today = date.today()
+                d4 = today.strftime("%b-%d-%Y")
+                # ^Credit: https://www.programiz.com/python-programming/datetime/current-datetime
+
+                fileName = f'{d4}_savedLSTM.h5' 
+                model = load_model(fileName)
+
+
+            # if not usingSavedModel:
+            # history = trainModel(x_t, y_t, x_val, y_val, model, 300)  # IMP!
+
             y_pred_org, y_test_t_org = createPredictions_LSTM(model, x_test_t, y_test_t) #IMP!
 
 
@@ -201,8 +240,11 @@ class button2Mode(Mode):
     def redrawAll(mode, canvas):
         canvas.create_rectangle(0, 0, mode.app.width, mode.app.height, 
                                 fill = 'maroon')
+        
+        canvas.create_text(mode.app.width/2, mode.app.height/3,
+                           text = 'PRESS D TO BEGIN', font = 'helvetica 35 bold')
 
-        canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'LSTMM to be implemented here')
+        canvas.create_text(mode.app.width/2, mode.app.height/2, text = 'Long-Short Term Memory Model (LSTM)')
 
 
 class mainMode(Mode):
@@ -232,66 +274,6 @@ class mainMode(Mode):
 
     def mouseDragged(mode, event):
         pass
-
-    # def redrawAll(mode, canvas):
-    #     # root = Tk()
-    #     # figure = plt.Figure(figsize=(6,5), dpi=100)
-    #     # ax = figure.add_subplot(111)
-    #     # chart_type = FigureCanvasTkAgg(figure, root)
-    #     # chart_type.get_tk_widget().pack()
-    #     # df.plot(kind='Chart Type such as bar', legend=True, ax=ax)
-    #     # ax.set_title('The Title of your chart')
-    #     Data1 = {'Country': ['US','CA','GER','UK','FR'],
-    #     'GDP_Per_Capita': [45000,42000,52000,49000,47000]}
-
-    #     df1 = DataFrame(Data1, columns= ['Country', 'GDP_Per_Capita'])
-    #     df1 = df1[['Country', 'GDP_Per_Capita']].groupby('Country').sum()
-
-
-
-    #     Data2 = {'Year': [1920,1930,1940,1950,1960,1970,1980,1990,2000,2010],
-    #             'Unemployment_Rate': [9.8,12,8,7.2,6.9,7,6.5,6.2,5.5,6.3]
-    #         }
-        
-    #     df2 = DataFrame(Data2,columns=['Year','Unemployment_Rate'])
-    #     df2 = df2[['Year', 'Unemployment_Rate']].groupby('Year').sum()
-
-
-
-    #     Data3 = {'Interest_Rate': [5,5.5,6,5.5,5.25,6.5,7,8,7.5,8.5],
-    #             'Stock_Index_Price': [1500,1520,1525,1523,1515,1540,1545,1560,1555,1565]
-    #         }
-        
-    #     df3 = DataFrame(Data3,columns=['Interest_Rate','Stock_Index_Price'])
-        
-
-    #     figure1 = plt.Figure(figsize=(6,5), dpi=100)
-    #     ax1 = figure1.add_subplot(111)
-    #     bar1 = FigureCanvasTkAgg(figure1, root)
-    #     bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
-    #     df1.plot(kind='bar', legend=True, ax=ax1)
-    #     ax1.set_title('Country Vs. GDP Per Capita')
-
-
-    #     figure2 = plt.Figure(figsize=(5,4), dpi=100)
-    #     ax2 = figure2.add_subplot(111)
-    #     line2 = FigureCanvasTkAgg(figure2, root)
-    #     line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
-    #     df2.plot(kind='line', legend=True, ax=ax2, color='r',marker='o', fontsize=10)
-    #     ax2.set_title('Year Vs. Unemployment Rate')
-
-
-    #     figure3 = plt.Figure(figsize=(5,4), dpi=100)
-    #     ax3 = figure3.add_subplot(111)
-    #     ax3.scatter(df3['Interest_Rate'],df3['Stock_Index_Price'], color = 'g')
-    #     scatter3 = FigureCanvasTkAgg(figure3, root) 
-    #     scatter3.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
-    #     ax3.legend() 
-    #     ax3.set_xlabel('Interest Rate')
-    #     ax3.set_title('Interest Rate Vs. Stock Index Price')
-
-    #     root.mainloop()
-
 
 class HelpMode(Mode):
     def redrawAll(mode, canvas):
@@ -357,3 +339,15 @@ MyModalApp(width=500, height=500)
 # explanations
 # metrics to show accuracy 
 # improve LSTM
+
+####################################
+
+# For thursday:
+
+# MAKE INSTRUCTIONS/EXPLANATIONS ASAP
+# MAKE VIDEO ASAP!!!
+# make MLR work with dialogue boxes, not in console
+# MAKE SURE LSTM IS RUNNING FINE
+# tweak code
+# polish UI
+# fractals
