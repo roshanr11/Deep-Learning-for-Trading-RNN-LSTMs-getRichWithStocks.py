@@ -37,14 +37,34 @@ from ipynb.fs.full.BACKUPv1REALTP_lstm_stuff import *
 
 class startMode(Mode):
     def redrawAll(mode, canvas):
-        canvas.create_rectangle(0, 0, mode.width, mode.height, fill = 'orange')
+        canvas.create_rectangle(0, 0, mode.width, mode.height, fill = 'turquoise')
         font = 'Arial 26 bold'
         canvas.create_text(mode.width / 2, 150, text='Welcome to', font=font)
-        canvas.create_text(mode.width / 2, 200, text='getRichWithStocks.py', font=font)
-        canvas.create_text(mode.width / 2, 250, text='Press any key for the game!', font=font)
+        canvas.create_text(mode.width / 2, 200, text='getRichWithStocks.py', font=font, fill = 'green')
+        canvas.create_text(mode.width / 2, 225, text='\nby Roshan Ram', font='Arial 20')
+        canvas.create_text(mode.width / 2, 250, text='\n\nPress any key to start making money!', font=font)
+
+    def keyPressed(mode, event):
+        mode.app.setActiveMode(mode.app.helpMode)
+
+
+class HelpMode(Mode):
 
     def keyPressed(mode, event):
         mode.app.setActiveMode(mode.app.instructionsMode)
+    
+    def redrawAll(mode, canvas):
+        font = 'Arial 15 bold'
+        canvas.create_rectangle(0, 0, mode.width, mode.height, fill = 'lawn green')
+        canvas.create_text(mode.width/2, mode.height/6, text = 'This program consists of the following parts:', font=font)
+        canvas.create_text(mode.width/2, mode.height/4, text = '*A multiple linear regression algorithm on stock data (built from scratch)', font=font)
+        canvas.create_text(mode.width/2, mode.height/3, text = '*A long short term memory model (LSTMM) (using keras)', font=font)
+        canvas.create_text(mode.width/2, mode.height/2, text = '*Explanations regarding the construction of the above models', font=font)
+        canvas.create_text(mode.width/2, mode.height/2+50, text = 'You will have a chance to explore machine learning models, \nlearn, and improve your knowledge of stocks \n \
+            and maybe even get rich in the process!', font=font)
+        canvas.create_text(mode.width/2, mode.height/2+150, text = 'Have fun! Press any key to start.', font = 'Arial 25 bold')
+        # canvas.create_text(mode.width/2, mode.height/10, text = 'This program consists of the following parts:')
+
 
 
 class instructionsMode(Mode):
@@ -172,7 +192,12 @@ class button1Mode(Mode):
             # mode.data = calcCCI(mode.data, 30)
             # mode.data = calcMA(mode.data, 5, 'simple')
 
-            mlrRecommendation(mode.data, 5, 3, 5)
+            days = mode.getUserInput("Please enter the number of days you would like to predict.")
+            days = int(days)
+
+            retVal = mlrRecommendation(mode.data, 5, 3, days)
+
+            mode.showMessage("Looks like you should {retVal}")
             mode.dataExists = False
 
 
@@ -192,7 +217,7 @@ class button2Mode(Mode):
 
             x_train, x_test = mainFunc1(data)  # IMP!
             x_t, y_t, x_val, x_test_t, y_val, y_test_t = mainFunc2(x_test, x_train)  # IMP!
-
+            model = create_model(x_t)
 
             if not usingSavedModel:
                 history = trainModel(x_t, y_t, x_val, y_val, model, 300)  # IMP!
@@ -235,6 +260,7 @@ class button2Mode(Mode):
             print("here's the error for that model")
             print(calcError(model, x_test_t, y_test_t, y_pred_org, y_test_t_org)) #IMP!
             print('here is the prediction using that model')
+            print(y_test_t_org)
             plotPrediction(y_pred_org, y_test_t_org) # IMP!
 
     def redrawAll(mode, canvas):
@@ -258,7 +284,8 @@ class mainMode(Mode):
 
 
     def appStarted(mode):
-        root = tk.Tk() 
+        # root = tk.Tk() 
+        pass
 
     def keyPressed(mode, event):
         pass
@@ -275,12 +302,12 @@ class mainMode(Mode):
     def mouseDragged(mode, event):
         pass
 
-class HelpMode(Mode):
-    def redrawAll(mode, canvas):
-        font = 'Arial 26 bold'
-        canvas.create_text(mode.width / 2, 150, text='This is the help screen!', font=font)
-        canvas.create_text(mode.width / 2, 250, text='(Insert helpful message here)', font=font)
-        canvas.create_text(mode.width / 2, 350, text='Press any key to return to the game!', font=font)
+# class HelpMode(Mode):
+#     def redrawAll(mode, canvas):
+#         font = 'Arial 26 bold'
+#         canvas.create_text(mode.width / 2, 150, text='This is the help screen!', font=font)
+#         canvas.create_text(mode.width / 2, 250, text='(Insert helpful message here)', font=font)
+#         canvas.create_text(mode.width / 2, 350, text='Press any key to return to the game!', font=font)
 
 
 class MyModalApp(ModalApp):
@@ -347,7 +374,9 @@ MyModalApp(width=500, height=500)
 # MAKE INSTRUCTIONS/EXPLANATIONS ASAP
 # MAKE VIDEO ASAP!!!
 # make MLR work with dialogue boxes, not in console
-# MAKE SURE LSTM IS RUNNING FINE
+#     error rate RMSE need in algo
+# # MAKE SURE LSTM IS RUNNING FINE
+#     need real predictions
 # tweak code
 # polish UI
 # fractals
