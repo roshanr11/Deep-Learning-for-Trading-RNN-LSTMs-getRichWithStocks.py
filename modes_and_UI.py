@@ -211,7 +211,7 @@ class button2Mode(Mode):
             # data, stock = getData(mode)
             ####
 
-            # usingSavedModel = False
+            usingSavedModel = False
 
             data, stock = getData_LSTM(mode)
 
