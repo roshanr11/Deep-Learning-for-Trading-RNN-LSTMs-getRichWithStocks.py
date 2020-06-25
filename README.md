@@ -1,4 +1,4 @@
-<p style="text-align: center;">getRichWithStocks.py</p>
+# <div align="center">getRichWithStocks.py</div>
  
 An interactive learning platform from scratch for beginners and experts alike in the trading industry as my final term project for Fundamentals of Programming [15-112] at Carnegie Mellon in under 3 weeks.
 
