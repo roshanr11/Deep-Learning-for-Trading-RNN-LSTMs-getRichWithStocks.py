@@ -5,7 +5,7 @@ An interactive learning platform from scratch for beginners and experts alike in
 This project consists of the following main parts:
 - Indicators and graphs based on stock indicators written from scratch
 - Simple linear regression/multiple linear regression machine learning models built from scratch [shallow learning, without use of sk-learn]
-- Long short term memory model (LSTMM) deep learning RNN model built with Keras to show
+- Long short term memory model (LSTMM) deep learning RNN model built with Keras 
 
 This stock simulation game helps users enforce good trading practices and provides a rough prediction of the trend of the desired stock trained on a selected data interval.
 
@@ -18,7 +18,7 @@ Themes:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 How to run:
-    download the following modules using "pip install <module name>" without the
+    download the following modules using "pip install \<module name>" without the
     '<' and '>'
 
     Modules:
