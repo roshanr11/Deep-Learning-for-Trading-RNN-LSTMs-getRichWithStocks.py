@@ -1,4 +1,4 @@
-# getRichWithStocks.py
+# <center>getRichWithStocks.py<\center>
  
 An interactive learning platform from scratch for beginners and experts alike in the trading industry as my final term project for Fundamentals of Programming [15-112] at Carnegie Mellon in under 3 weeks.
 
@@ -19,7 +19,7 @@ Themes:
 
 How to run:
     download the following modules using "pip install \<module name>" without the
-    '<' and '>'
+    \< and \>
 
     Modules:
         Pandas
